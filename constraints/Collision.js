@@ -61,6 +61,40 @@ define(function(require, exports, module) {
     };
 
     /**
+     * Method to determine if a collision occurs between source and target
+     * 
+     * Carl A. Fahlstrom <carl@fahlstrom-research.com>
+     *
+     * @method getOverlap
+     * @param target
+     * @param source
+     */
+    Collision.prototype.getOverlap = function getOverlap(source, target) {
+	var isCollision = false;
+	if (source instanceof Circle) {
+        	var r1 = source.radius;
+	}
+	else if (source instanceof Rectangle) {
+	}
+	if (target instanceof Circle) {
+        	var r2 = target.radius;
+	}
+	else if (target instanceof Rectangle) {
+	}
+        var p1 = source.position;
+        var p2 = target.position;
+        var pDiff = this.pDiff;
+        pDiff.set(p2.sub(p1));
+       	var dist = pDiff.norm();
+	var n = pDiff.normalize();
+        var overlap = dist - (r1 + r2);
+	if (overlap < 0) {
+		isCollision = true;
+	}
+	return [overlap, n, isCollision];
+    };
+
+    /**
      * Adds an impulse to a physics body's velocity due to the constraint
      *
      * @method applyConstraint
@@ -72,9 +106,9 @@ define(function(require, exports, module) {
         if (source === undefined) return;
 
         var v1 = source.velocity;
-        var p1 = source.position;
+        //var p1 = source.position;
         var w1 = source.inverseMass;
-        var r1 = source.radius;
+        //var r1 = source.radius;
 
         var options = this.options;
         var drift = options.drift;
@@ -82,7 +116,7 @@ define(function(require, exports, module) {
         var restitution = options.restitution;
 
         var n     = this.normal;
-        var pDiff = this.pDiff;
+        //var pDiff = this.pDiff;
         var vDiff = this.vDiff;
         var impulse1 = this.impulse1;
         var impulse2 = this.impulse2;
@@ -93,15 +127,15 @@ define(function(require, exports, module) {
             if (target === source) continue;
 
             var v2 = target.velocity;
-            var p2 = target.position;
+            //var p2 = target.position;
             var w2 = target.inverseMass;
-            var r2 = target.radius;
+            //var r2 = target.radius;
 
-            pDiff.set(p2.sub(p1));
+            //pDiff.set(p2.sub(p1));
             vDiff.set(v2.sub(v1));
 
-            var dist    = pDiff.norm();
-            var overlap = dist - (r1 + r2);
+            //var dist    = pDiff.norm();
+            var overlap = getOverlap(source, target);
             var effMass = 1/(w1 + w2);
             var gamma   = 0;
 
